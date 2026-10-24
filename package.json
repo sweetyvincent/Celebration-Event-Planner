@@ -1,0 +1,24 @@
+{
+  "name": "soiree-event-planner",
+  "version": "3.0.0",
+  "description": "Soir\u00e9e: a GenAI-powered celebration and event planner (static site, GitHub Pages ready).",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "lint": "eslint .",
+    "test": "node --test \"tests/unit/*.test.js\"",
+    "test:e2e": "node --test --test-concurrency=1 \"tests/e2e/*.test.js\"",
+    "test:all": "npm run lint && npm test && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "axe-core": "^4.10.0",
+    "eslint": "^9.0.0",
+    "globals": "^15.0.0",
+    "playwright-core": "~1.56.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
