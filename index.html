@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com; object-src 'none'; base-uri 'none'; form-action 'self'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Soirée · Celebration & Event Planner</title>
+    <meta
+      name="description"
+      content="GenAI-powered planner for weddings, birthdays and community events: budgets, timelines, vendor checklists and personalised ideas."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#planner">Skip to the planner</a>
+    <canvas id="scene3d" aria-hidden="true" tabindex="-1"></canvas>
+    <canvas id="confetti" aria-hidden="true"></canvas>
+    <div class="scrollbar" id="scrollBar" aria-hidden="true"></div>
+    <div class="bg" aria-hidden="true">
+      <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+    </div>
+
+    <header class="nav">
+      <a class="logo" href="#top"><span class="logo-mark">✦</span> Soirée</a>
+      <nav aria-label="Main">
+        <a href="#planner">Planner</a>
+        <a href="#features">Features</a>
+        <button
+          type="button"
+          id="motionBtn"
+          class="badge"
+          aria-pressed="false"
+          title="Pause or resume decorative animation"
+        >
+          Motion: on
+        </button>
+        <button type="button" id="aiBadge" class="badge">Smart engine · add AI key</button>
+      </nav>
+    </header>
+
+    <main id="top">
+      <!-- HERO + WIZARD -->
+      <section class="hero">
+        <div class="floaters" aria-hidden="true">
+          <span style="--x: 8%; --y: 20%; --d: 0s">🎈</span><span style="--x: 88%; --y: 14%; --d: 1.2s">💍</span>
+          <span style="--x: 14%; --y: 72%; --d: 0.6s">🎂</span><span style="--x: 82%; --y: 68%; --d: 1.8s">🎉</span>
+          <span style="--x: 50%; --y: 8%; --d: 2.4s">✨</span>
+        </div>
+        <p class="eyebrow">GenAI Celebration & Event Planner</p>
+        <h1>Plan the <span class="grad">perfect celebration</span><br />in minutes, not months.</h1>
+        <p class="lead">
+          Weddings, birthdays and community events: get a smart budget, a dated timeline, a vendor checklist and ideas
+          made for you.
+        </p>
+        <a href="#planner" class="btn primary pulse">Start planning ↓</a>
+        <p class="hint">Tip: click the floating balloons to pop them 🎈</p>
+      </section>
+
+      <section id="planner" class="wizard-wrap">
+        <form id="wizard" class="card wizard" novalidate>
+          <div class="steps">
+            <div
+              class="bar"
+              id="stepProgress"
+              role="progressbar"
+              aria-label="Wizard progress"
+              aria-valuemin="1"
+              aria-valuemax="3"
+              aria-valuenow="1"
+              aria-valuetext="Step 1 of 3"
+            >
+              <i id="stepBar"></i>
+            </div>
+            <ol aria-hidden="true">
+              <li class="on">Event</li>
+              <li>Details</li>
+              <li>Style</li>
+            </ol>
+          </div>
+
+          <div class="step active" data-step="1">
+            <h2 tabindex="-1">What are we celebrating?</h2>
+            <fieldset class="type-grid">
+              <legend class="sr-only">Event type</legend>
+              <label class="type"
+                ><input type="radio" name="event_type" value="wedding" checked /><span
+                  ><b aria-hidden="true">💍</b>Wedding<small>Ceremony, reception, rituals</small></span
+                ></label
+              >
+              <label class="type"
+                ><input type="radio" name="event_type" value="birthday" /><span
+                  ><b aria-hidden="true">🎂</b>Birthday<small>Kids to milestone years</small></span
+                ></label
+              >
+              <label class="type"
+                ><input type="radio" name="event_type" value="community" /><span
+                  ><b aria-hidden="true">🏘️</b>Community<small>Festivals, fundraisers, meetups</small></span
+                ></label
+              >
+            </fieldset>
+          </div>
+
+          <div class="step" data-step="2">
+            <h2 tabindex="-1">The essentials</h2>
+            <div class="grid2">
+              <label>Event name<input name="name" placeholder="e.g. Aanya & Rohan's Wedding" maxlength="80" /></label>
+              <label>Date<input type="date" name="date" required /></label>
+              <label>Guests<input type="number" name="guests" min="1" max="5000" value="100" required /></label>
+              <label
+                >Total budget
+                <div class="inline">
+                  <select name="currency">
+                    <option value="INR">₹ INR</option>
+                    <option value="USD">$ USD</option>
+                    <option value="EUR">€ EUR</option>
+                    <option value="GBP">£ GBP</option>
+                  </select>
+                  <input type="number" name="budget" min="1" value="500000" required /></div
+              ></label>
+              <label class="full"
+                >City (optional)<input name="city" placeholder="e.g. Hyderabad" maxlength="60"
+              /></label>
+            </div>
+            <p class="err" id="err2" role="alert"></p>
+          </div>
+
+          <div class="step" data-step="3">
+            <h2 tabindex="-1">Pick your vibe</h2>
+            <fieldset class="vibes" id="vibes">
+              <legend class="sr-only">Vibe</legend>
+              <label><input type="radio" name="vibe" value="elegant" checked /><span>🥂 Elegant</span></label>
+              <label><input type="radio" name="vibe" value="rustic" /><span>🌾 Rustic</span></label>
+              <label><input type="radio" name="vibe" value="fun" /><span>🎨 Fun</span></label>
+              <label><input type="radio" name="vibe" value="minimal" /><span>🤍 Minimal</span></label>
+              <label><input type="radio" name="vibe" value="traditional" /><span>🪔 Traditional</span></label>
+            </fieldset>
+            <label class="full"
+              >Interests, must-haves, ideas (comma separated)
+              <textarea
+                name="notes"
+                rows="2"
+                maxlength="300"
+                placeholder="live music, vegetarian menu, outdoor games…"
+              ></textarea>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn ghost" id="prev" hidden>← Back</button>
+            <button type="button" class="btn primary" id="next">Next →</button>
+            <button type="submit" class="btn primary glow" id="submit" hidden>✨ Generate my plan</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="dash" hidden>
+        <div class="dash-head reveal">
+          <div>
+            <p class="eyebrow" id="dEyebrow"></p>
+            <h2 id="dTitle"></h2>
+            <p class="muted" id="dSub"></p>
+          </div>
+          <div class="head-actions">
+            <button class="btn ghost" id="btnShare">🔗 Share</button>
+            <button class="btn ghost" id="btnIcs">📅 Calendar</button>
+            <button class="btn ghost" id="btnJson">⬇ JSON</button>
+            <button class="btn ghost" id="btnPrint">🖨 Print</button>
+            <button class="btn ghost" id="btnImport">⬆ Import</button>
+            <input type="file" id="fileImport" accept="application/json,.json" hidden />
+            <button class="btn ghost" id="btnNew">＋ New plan</button>
+          </div>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Plan sections">
+          <button
+            type="button"
+            role="tab"
+            id="tab-overview"
+            aria-controls="p-overview"
+            aria-selected="true"
+            tabindex="0"
+            class="tab active"
+            data-tab="overview"
+          >
+            Overview
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-budget"
+            aria-controls="p-budget"
+            aria-selected="false"
+            tabindex="-1"
+            class="tab"
+            data-tab="budget"
+          >
+            Budget
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-timeline"
+            aria-controls="p-timeline"
+            aria-selected="false"
+            tabindex="-1"
+            class="tab"
+            data-tab="timeline"
+          >
+            Timeline
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-vendors"
+            aria-controls="p-vendors"
+            aria-selected="false"
+            tabindex="-1"
+            class="tab"
+            data-tab="vendors"
+          >
+            Vendors
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-guests"
+            aria-controls="p-guests"
+            aria-selected="false"
+            tabindex="-1"
+            class="tab"
+            data-tab="guests"
+          >
+            Guests
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-seating"
+            aria-controls="p-seating"
+            aria-selected="false"
+            tabindex="-1"
+            class="tab"
+            data-tab="seating"
+          >
+            Seating
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-run"
+            aria-controls="p-run"
+            aria-selected="false"
+            tabindex="-1"
+            class="tab"
+            data-tab="run"
+          >
+            Day plan
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-invite"
+            aria-controls="p-invite"
+            aria-selected="false"
+            tabindex="-1"
+            class="tab"
+            data-tab="invite"
+          >
+            Invites
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-ideas"
+            aria-controls="p-ideas"
+            aria-selected="false"
+            tabindex="-1"
+            class="tab"
+            data-tab="ideas"
+          >
+            Ideas
+          </button>
+          <i class="tab-ink" id="tabInk" aria-hidden="true"></i>
+        </div>
+
+        <div class="panel active" id="p-overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0"></div>
+        <div class="panel" id="p-budget" role="tabpanel" aria-labelledby="tab-budget" tabindex="0"></div>
+        <div class="panel" id="p-timeline" role="tabpanel" aria-labelledby="tab-timeline" tabindex="0"></div>
+        <div class="panel" id="p-vendors" role="tabpanel" aria-labelledby="tab-vendors" tabindex="0"></div>
+        <div class="panel" id="p-guests" role="tabpanel" aria-labelledby="tab-guests" tabindex="0"></div>
+        <div class="panel" id="p-seating" role="tabpanel" aria-labelledby="tab-seating" tabindex="0"></div>
+        <div class="panel" id="p-run" role="tabpanel" aria-labelledby="tab-run" tabindex="0"></div>
+        <div class="panel" id="p-invite" role="tabpanel" aria-labelledby="tab-invite" tabindex="0"></div>
+        <div class="panel" id="p-ideas" role="tabpanel" aria-labelledby="tab-ideas" tabindex="0"></div>
+      </section>
+
+      <section id="features" class="features">
+        <h2 class="center">Everything in one place</h2>
+        <div class="feat-grid">
+          <div class="card feat reveal">
+            <b aria-hidden="true">💰</b>
+            <h3>Smart budget</h3>
+            <p>Percent-based split per event type, with live spent tracking.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">🗓️</b>
+            <h3>Dated timeline</h3>
+            <p>Adapts to how many days you have left, exportable to your calendar.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">✅</b>
+            <h3>Vendor checklists</h3>
+            <p>Questions to ask, items to confirm and progress tracking.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">🎨</b>
+            <h3>Personal ideas</h3>
+            <p>Themes, palettes, menus and activities tailored to your vibe.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">🤖</b>
+            <h3>AI assistant</h3>
+            <p>Ask anything about your plan. Powered by Claude when a key is set.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">📦</b>
+            <h3>Export & print</h3>
+            <p>Download JSON, add to calendar or print a clean PDF.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">👥</b>
+            <h3>Guest list & RSVPs</h3>
+            <p>Track replies, meals and plus-ones, and export to CSV.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">🪑</b>
+            <h3>3D seating planner</h3>
+            <p>Drag guests onto tables and tilt the floor into 3D.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">🎛️</b>
+            <h3>What-if budget</h3>
+            <p>Drag sliders to rebalance spending and watch the chart move.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">🕒</b>
+            <h3>Day-of schedule</h3>
+            <p>An editable run-of-show you can copy and send to vendors.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">🎨</b>
+            <h3>Theme your plan</h3>
+            <p>Flip a theme card and apply its palette to the whole site.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">💌</b>
+            <h3>Invitation studio</h3>
+            <p>Design a flip-card invite and download it as a PNG.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">⏳</b>
+            <h3>Live countdown</h3>
+            <p>A ticking timer to your big day, right on the overview.</p>
+          </div>
+          <div class="card feat reveal">
+            <b aria-hidden="true">🏅</b>
+            <h3>Badges & share links</h3>
+            <p>Unlock achievements and share your plan with one link.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">Built with ♥ for celebrations · Soirée</footer>
+
+    <!-- loader -->
+    <div class="loader" id="loader" role="status" aria-live="polite" hidden>
+      <div class="cube-wrap" aria-hidden="true">
+        <div class="cube"><i>🎈</i><i>💍</i><i>🎂</i><i>🎉</i><i>✨</i><i>🎁</i></div>
+      </div>
+      <p id="loaderMsg">Crunching your budget…</p>
+    </div>
+
+    <!-- chat -->
+    <button
+      type="button"
+      class="fab"
+      id="fab"
+      aria-label="Open planning assistant"
+      aria-expanded="false"
+      aria-controls="chat"
+    >
+      <span aria-hidden="true">💬</span>
+    </button>
+    <div class="chat" id="chat" hidden role="dialog" aria-modal="false" aria-labelledby="chatTitle">
+      <div class="chat-head">
+        <h2 id="chatTitle" class="chat-title">✦ Planning assistant</h2>
+        <button type="button" id="chatClose" aria-label="Close assistant">✕</button>
+      </div>
+      <div class="chat-body" id="chatBody" role="log" aria-live="polite" aria-label="Conversation">
+        <div class="msg bot">Hi! Generate a plan and ask me anything: budget, timeline, vendors or ideas.</div>
+      </div>
+      <div class="chips" id="chatChips" role="group" aria-label="Suggested questions">
+        <button>How can I save money?</button><button>What should I do first?</button><button>Theme ideas?</button>
+      </div>
+      <form id="chatForm">
+        <input
+          id="chatInput"
+          aria-label="Your question"
+          placeholder="Ask about your event…"
+          autocomplete="off"
+        /><button class="btn primary">Send</button>
+      </form>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+    <script src="vendor/three.min.js"></script>
+    <script src="data.js"></script>
+    <script src="util.js"></script>
+    <script src="plan-io.js"></script>
+    <script src="plan-logic.js"></script>
+    <script src="seating.js"></script>
+    <script src="engine.js"></script>
+    <script src="fx3d.js"></script>
+    <script src="extras.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
